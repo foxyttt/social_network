@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import DO_NOTHING
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -21,3 +22,15 @@ def create_profile(sender, instance, created, **kwargs):
         user_profile.save()
         user_profile.follows.add(instance.profile)
         user_profile.save()
+
+class Post(models.Model):
+    user = models.ForeignKey(User, related_name='posts', on_delete=DO_NOTHING)
+    body = models.CharField(max_length=140)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return (
+            f'{self.user} '
+            f'({self.created_at:%Y-%m-%d %H:%M}): '
+            f'{self.body[:30]}'
+        )
