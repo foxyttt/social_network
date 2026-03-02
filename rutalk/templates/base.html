@@ -10,24 +10,42 @@
     <title>RuTalk</title>
 </head>
 <body>
-    <a href="{% url 'rutalk:dashboard' %} ">
     <section class="hero is-small is-success mb-4">
         <div class="hero-body">
-            <h1 class="title is-1">RuTalk</h1>
-            <p class="subtitle is-4">
-                Your tiny social network built with Django
-            </p>
+            <div class="columns is-vcentered">
+                <div class="column">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'rutalk:feed' %}" class="has-text-white">
+                        <h1 class="title is-1">RuTalk</h1>
+                        <p class="subtitle is-4">
+                            Your tiny social network built with Django
+                        </p>
+                    </a>
+                    {% else %}
+                    <h1 class="title is-1">RuTalk</h1>
+                    <p class="subtitle is-4">
+                        Your tiny social network built with Django
+                    </p>
+                    {% endif %}
+                </div>
+                {% if user.is_authenticated %}
+                <div class="column is-narrow">
+                    <!-- Простая форма выхода, без лишней переменной form -->
+                    <form method="post" action="{% url 'rutalk:logout' %}">
+                        {% csrf_token %}
+                        <input type="submit" value="Logout" class="button is-light is-small" />
+                        <input type="hidden" name="next" value="{% url 'rutalk:dashboard' %}" />
+                    </form>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </section>
-    </a>
 
     <div class="container">
         <div class="columns">
-
             {% block content %}
-
             {% endblock content %}
-
         </div>
     </div>
 </body>

@@ -11,28 +11,31 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('rutalk:dashboard')
+            return redirect('rutalk:feed')
     else:
         form = UserCreationForm()
     return render(request, 'registration/sign_up.html', {'form': form})
 
-def dashboard(request):
+def feed(request):
     form = PostForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
             post = form.save(commit=False)
             post.user = request.user
             post.save()
-            return redirect('rutalk:dashboard')
+            return redirect('rutalk:feed')
 
     followed_posts = Post.objects.filter(
         user__profile__in=request.user.profile.follows.all()
     ).order_by('-created_at')
     return render(
         request,
-        'rutalk/dashboard.html',
+        'rutalk/feed.html',
         {'form': form, 'posts': followed_posts},
     )
+
+def dashboard(request):
+    return render(request, 'rutalk/dashboard.html')
 
 def profile_list(request):
     profiles = Profile.objects.exclude(user=request.user)

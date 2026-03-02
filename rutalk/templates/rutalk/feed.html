@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="column">
+    {% for post in posts %}
+        <div class="box">
+            {{ post.body }}
+            <span class="is-small has-text-grey-light">
+                ({{ post.created_at }} by {{ post.user.username }}
+            </span>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="column is-one-third">
+    <div class="block">
+        <a href="{% url 'rutalk:profile_list' %} ">
+            <button class="button is-dark is-outlined is-fullwidth">
+                All Profiles
+            </button>
+        </a>
+    </div>
+    <div class="block">
+        <a href="{% url 'rutalk:profile' request.user.profile.id %} ">
+            <button class="button is-success is-light is-outlined is-fullwidth">
+                My Profile
+            </button>
+        </a>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button is-success is-fullwidth is-medium mt-5"
+                type="submit">Post
+        </button>
+    </form>
+</div>
+
+{% endblock content %}
