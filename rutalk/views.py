@@ -1,19 +1,17 @@
 from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
-from django.urls import reverse
 from django.shortcuts import render, redirect
 from .models import Profile, Post
-from .forms import PostForm
+from .forms import PostForm, CustomUserCreationForm
 
 def sign_up(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('rutalk:feed')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'registration/sign_up.html', {'form': form})
 
 def feed(request):
