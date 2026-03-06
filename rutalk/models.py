@@ -26,6 +26,7 @@ def create_profile(sender, instance, created, **kwargs):
 class Post(models.Model):
     user = models.ForeignKey(User, related_name='posts', on_delete=DO_NOTHING)
     body = models.CharField(max_length=140)
+    image = models.ImageField(upload_to='post_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -6,8 +6,13 @@
     {% for post in posts %}
         <div class="box">
             {{ post.body }}
+            {% if post.image %}
+                <figure class="image">
+                    <img src="{{ post.image.url }}" alt="Post image">
+                </figure>
+            {% endif %}
             <span class="is-small has-text-grey-light">
-                ({{ post.created_at }} by {{ post.user.username }}
+                ({{ post.created_at }} by {{ post.user.username }})
             </span>
         </div>
     {% endfor %}
@@ -28,12 +33,37 @@
             </button>
         </a>
     </div>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+
+        <!-- Поле body (текст поста) -->
+        <div class="field">
+            <div class="control">
+                {{ form.body }}
+            </div>
+        </div>
+
+        <!-- Поле image с правильной Bulma-стилизацией -->
+        <div class="field">
+            <label class="label">{{ form.image.label }}</label>
+            <div class="control">
+                <div class="file is-boxed is-success">
+                    <label class="file-label">
+                        {{ form.image }}  <!-- сам input с классом file-input -->
+                        <span class="file-cta">
+                            <span class="file-icon">📁</span>
+                            <span class="file-label">Выберите изображение…</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+            {% if form.image.errors %}
+                <p class="help is-danger">{{ form.image.errors }}</p>
+            {% endif %}
+        </div>
+
         <button class="button is-success is-fullwidth is-medium mt-5"
-                type="submit">Post
-        </button>
+                type="submit">Post</button>
     </form>
 </div>
 

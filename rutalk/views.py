@@ -15,7 +15,7 @@ def sign_up(request):
     return render(request, 'registration/sign_up.html', {'form': form})
 
 def feed(request):
-    form = PostForm(request.POST or None)
+    form = PostForm(request.POST, request.FILES or None)
     if request.method == 'POST':
         if form.is_valid():
             post = form.save(commit=False)

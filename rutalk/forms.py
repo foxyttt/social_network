@@ -13,6 +13,15 @@ class PostForm(forms.ModelForm):
         ),
         label='',
     )
+    image = forms.ImageField(
+        required=False,
+        widget=forms.widgets.ClearableFileInput(
+            attrs={
+                "class" : "file-input",
+            }
+        ),
+        label='Upload image',
+    )
 
     class Meta:
         model = Post

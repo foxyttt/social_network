@@ -9,6 +9,7 @@ urlpatterns = [
     path('sign_up/', sign_up, name='sign_up'),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
+    #смена пароля
     path('accounts/password_change/',
          auth_views.PasswordChangeView.as_view(
              template_name='registration/custom_password_change_form.html',
@@ -20,6 +21,7 @@ urlpatterns = [
              template_name='registration/custom_password_change_done.html'
          ),
          name='password_change_done'),
+    #сброс пароля
     path('accounts/password_reset/',
          auth_views.PasswordResetView.as_view(
              template_name='registration/custom_password_reset_form.html',
