@@ -5,7 +5,9 @@
 <div class="column">
     {% for post in posts %}
         <div class="box">
-            {{ post.body }}
+            <a href="{% url 'rutalk:post_detail' post.id %}">
+                {{ post.body }}
+            </a>
             {% if post.image %}
                 <figure class="image">
                     <img src="{{ post.image.url }}" alt="Post image">

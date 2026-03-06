@@ -1,14 +1,14 @@
 from django.urls import path, reverse_lazy
 from django.contrib.auth import views as auth_views
-from .views import dashboard, profile_list, profile, sign_up, feed
+from .views import dashboard, profile_list, profile, sign_up, feed, post_detail
 
 app_name = 'rutalk'
 
 urlpatterns = [
-    path('', dashboard, name='dashboard'),
-    path('sign_up/', sign_up, name='sign_up'),
-    path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-    path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('', dashboard, name='dashboard'), #входная страница
+    path('sign_up/', sign_up, name='sign_up'), #страница регистрации
+    path('accounts/login/', auth_views.LoginView.as_view(), name='login'), #страница входа
+    path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'), #страница выхода
     #смена пароля
     path('accounts/password_change/',
          auth_views.PasswordChangeView.as_view(
@@ -21,7 +21,7 @@ urlpatterns = [
              template_name='registration/custom_password_change_done.html'
          ),
          name='password_change_done'),
-    #сброс пароля
+    #сброс и смена пароля
     path('accounts/password_reset/',
          auth_views.PasswordResetView.as_view(
              template_name='registration/custom_password_reset_form.html',
@@ -46,8 +46,8 @@ urlpatterns = [
              template_name='registration/custom_password_reset_complete.html'
          ),
          name='password_reset_complete'),
-
-    path('feed/', feed, name='feed'),
-    path('profile_list/', profile_list, name='profile_list'),
-    path('profile/<int:pk>', profile, name='profile'),
+    path('feed/', feed, name='feed'), #лента
+    path('post/<int:pk>/', post_detail, name='post_detail'), #страница отдельного поста
+    path('profile_list/', profile_list, name='profile_list'), #страница со списком профилей
+    path('profile/<int:pk>', profile, name='profile'), #страница профиля конкретного пользователя
 ]

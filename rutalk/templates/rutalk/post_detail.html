@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="column">
+    <div class="box">
+        <p>{{ post.body }}</p>
+        {% if post.image %}
+            <figure class="image">
+                <img src="{{ post.image.url }}" alt="Post image">
+            </figure>
+        {% endif %}
+        <span class="is-small has-text-grey-light">
+            {{ post.created_at }} by {{ post.user.username }}
+        </span>
+    </div>
+
+    <h3>Comments</h3>
+    {% for comment in comments %}
+        <div class="box">
+            <p>{{ comment.body }}</p>
+            <span class="is-small has-text-grey-light">
+                {{ comment.created_at }} by {{ comment.user.username }}
+            </span>
+        </div>
+    {% empty %}
+        <p>No comments yet.</p>
+    {% endfor %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button is-success">Send</button>
+    </form>
+</div>
+{% endblock %}
