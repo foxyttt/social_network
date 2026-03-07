@@ -5,9 +5,21 @@
 <div class="column">
 
     <div class="block">
-    <h1 class="title is-1">
-        {{profile.user.username|upper}}'s posts
-    </h1>
+
+    <div class="box">
+        <h2 class="title is-4">About</h2>
+        <p><strong>Имя:</strong> {{ profile.first_name|default:"—" }}</p>
+        <p><strong>Фамилия:</strong> {{ profile.last_name|default:"—" }}</p>
+        <p><strong>Отчество:</strong> {{ profile.patronymic|default:"—" }}</p>
+        <p><strong>Дата рождения:</strong> {{ profile.birth_date|date:"d.m.Y"|default:"—" }}</p>
+        <p><strong>О себе:</strong> {{ profile.bio|linebreaks|default:"—" }}</p>
+        <p><strong>Место учёбы/работы:</strong> {{ profile.education|default:"—" }}</p>
+        <p><strong>Телефон:</strong> {{ profile.phone|default:"—" }}</p>
+    </div>
+
+    {% if request.user == profile.user %}
+        <a href="{% url 'rutalk:edit_profile' %}" class="button is-info">Edit profile</a>
+    {% endif %}
 
     <form method="post">
         {% csrf_token %}
@@ -33,17 +45,6 @@
         {% endif %}
         </div>
     </form>
-    </div>
-
-    <div class="content">
-        {% for post in profile.user.posts.all %}
-            <div class="box">
-                {{ post.body }}
-                <span class="is-small has-text-grey-light">
-                    ({{ post.created_at }})
-                </span>
-            </div>
-        {% endfor %}
     </div>
 
 </div>

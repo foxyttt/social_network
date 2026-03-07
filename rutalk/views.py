@@ -1,7 +1,8 @@
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Profile, Post, Comment
-from .forms import PostForm, CustomUserCreationForm, CommentForm
+from .models import Profile, Post, Comment, Group, Membership
+from .forms import PostForm, CustomUserCreationForm, CommentForm, GroupForm, ProfileForm
 
 def sign_up(request):
     if request.method == 'POST':
@@ -15,21 +16,13 @@ def sign_up(request):
     return render(request, 'registration/sign_up.html', {'form': form})
 
 def feed(request):
-    form = PostForm(request.POST, request.FILES or None)
-    if request.method == 'POST':
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.user = request.user
-            post.save()
-            return redirect('rutalk:feed')
-
-    followed_posts = Post.objects.filter(
-        user__profile__in=request.user.profile.follows.all()
+    groups = Group.objects.filter(
+        memberships__user=request.user
     ).order_by('-created_at')
     return render(
         request,
         'rutalk/feed.html',
-        {'form': form, 'posts': followed_posts},
+        {'groups': groups},
     )
 
 def dashboard(request):
@@ -72,3 +65,64 @@ def post_detail(request, pk):
         'comments': comments,
         'form': form,
     })
+
+def group_list(request):
+    groups = Group.objects.all().order_by('-created_at')
+    return render(request, 'rutalk/group_list.html', {'groups' : groups})
+
+def group(request, pk):
+    group = get_object_or_404(Group, pk=pk)
+    is_member = Membership.objects.filter(user=request.user, group=group).exists()
+    posts = group.posts.all().order_by('-created_at')
+
+    if request.method == 'POST' and is_member:
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.user = request.user
+            post.group = group
+            post.save()
+            return redirect('rutalk:group', pk=group.pk)
+    else:
+        form = PostForm() if is_member else None
+
+    return render(request, 'rutalk/group.html', {
+        'group': group,
+        'is_member': is_member,
+        'posts': posts,
+        'form': form,
+    })
+
+def group_create(request):
+    if request.method == 'POST':
+        form = GroupForm(request.POST)
+        if form.is_valid():
+            group = form.save(commit=False)
+            group.owner = request.user
+            group.save()
+            Membership.objects.create(user=request.user, group=group)
+            return redirect('rutalk:group', pk=group.pk)
+    else:
+        form = GroupForm()
+    return render(request, 'rutalk/group_form.html', {'form': form})
+
+def group_join(request, pk):
+    group = get_object_or_404(Group, pk=pk)
+    Membership.objects.get_or_create(user=request.user, group=group)
+    return redirect('rutalk:group', pk=group.pk)
+
+def group_leave(request, pk):
+    group = get_object_or_404(Group, pk=pk)
+    Membership.objects.filter(user=request.user, group=group).delete()
+    return redirect('rutalk:feed')
+
+def edit_profile(request):
+    profile = request.user.profile
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('rutalk:profile', pk=profile.pk)
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, 'rutalk/edit_profile.html', {'form': form})

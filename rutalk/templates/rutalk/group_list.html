@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="columns">
+    <div class="column is-three-quarters">
+        <h1 class="title">All groups</h1>
+        {% for group in groups %}
+            <div class="box">
+                <h2 class="title is-4"><a href="{% url 'rutalk:group' group.pk %}">{{ group.name }}</a></h2>
+                <p>{{ group.description|truncatewords:30 }}</p>
+                <small>Members: {{ group.memberships.count }}</small>
+            </div>
+        {% empty %}
+            <p>No groups yet.</p>
+        {% endfor %}
+    </div>
+    <div class="column">
+        <a href="{% url 'rutalk:group_create' %}" class="button is-primary is-fullwidth">Create group</a>
+    </div>
+</div>
+{% endblock %}
