@@ -1,102 +1,60 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-<div class="column">
-
-    <div class="block">
-
-    <div class="box">
-        <h2 class="title is-4">About</h2>
-        <p><strong>Имя:</strong> {{ profile.first_name|default:"—" }}</p>
-        <p><strong>Фамилия:</strong> {{ profile.last_name|default:"—" }}</p>
-        <p><strong>Отчество:</strong> {{ profile.patronymic|default:"—" }}</p>
-        <p><strong>Дата рождения:</strong> {{ profile.birth_date|date:"d.m.Y"|default:"—" }}</p>
-        <p><strong>О себе:</strong> {{ profile.bio|linebreaks|default:"—" }}</p>
-        <p><strong>Место учёбы/работы:</strong> {{ profile.education|default:"—" }}</p>
-        <p><strong>Телефон:</strong> {{ profile.phone|default:"—" }}</p>
-    </div>
-
-    {% if request.user == profile.user %}
-        <a href="{% url 'rutalk:edit_profile' %}" class="button is-info">Edit profile</a>
-    {% endif %}
-
-    <form method="post">
-        {% csrf_token %}
-        <div class="buttons has-addons">
-        {% if profile in user.profile.follows.all %}
-            <button class="button is-success is-static">
-                Follow
-            </button>
-            <button class="button is-danger"
-                    name="follow"
-                    value="unfollow">
-                Unfollow
-            </button>
-        {% else %}
-            <button class="button is-success"
-                    name="follow"
-                    value="follow">
-                Follow
-            </button>
-            <button class="button is-danger is-static">
-                Unfollow
-            </button>
-        {% endif %}
+<div class="page-grid">
+    <section class="app-card wide">
+        <div class="app-card__header">
+            <h2 class="app-card__title">About</h2>
         </div>
-    </form>
-    </div>
+        <div class="app-card__body">
+            <div class="profile-data">
+                <div class="profile-row"><strong>Имя:</strong><span>{{ profile.first_name|default:"—" }}</span></div>
+                <div class="profile-row"><strong>Фамилия:</strong><span>{{ profile.last_name|default:"—" }}</span></div>
+                <div class="profile-row"><strong>Отчество:</strong><span>{{ profile.patronymic|default:"—" }}</span></div>
+                <div class="profile-row"><strong>Дата рождения:</strong><span>{{ profile.birth_date|date:"d.m.Y"|default:"—" }}</span></div>
+                <div class="profile-row"><strong>О себе:</strong><span>{{ profile.bio|default:"—" }}</span></div>
+                <div class="profile-row"><strong>Место учебы/работы:</strong><span>{{ profile.education|default:"—" }}</span></div>
+                <div class="profile-row"><strong>Телефон:</strong><span>{{ profile.phone|default:"—" }}</span></div>
+            </div>
+        </div>
+        <div class="app-card__footer actions-left">
+            {% if request.user == profile.user %}
+                <a href="{% url 'rutalk:edit_profile' %}" class="btn">Edit Profile</a>
+                <button class="btn btn-danger" type="button">Unfollow</button>
+            {% else %}
+                <form method="post" style="display:flex; gap:12px; flex-wrap:wrap; margin:0;">
+                    {% csrf_token %}
+                    {% if profile in user.profile.follows.all %}
+                        <button class="btn btn-danger" name="follow" value="unfollow">Unfollow</button>
+                    {% else %}
+                        <button class="btn" name="follow" value="follow">Follow</button>
+                    {% endif %}
+                </form>
+            {% endif %}
+            <a href="{% url 'rutalk:profile_list' %}" class="btn btn-secondary">All Profiles</a>
+        </div>
+    </section>
 
-</div>
-
-<div class="column is-one-third">
-
-    <div class="block">
-        <a href="{% url 'rutalk:profile_list' %}">
-            <button class="button is-dark is-outlined is-fullwidth">
-                All Profiles
-            </button>
-        </a>
-    </div>
-
-    <div class="block">
-        <h3 class="title is-4">
-            {{profile.user.username}} follows:
-        </h3>
-        <div class="content">
-            <ul>
+    <section class="profile-extra">
+        <h3>{{ profile.user.username }} follows:</h3>
+        <ul>
             {% for following in profile.follows.all %}
-                <li>
-                    <a href="{% url 'rutalk:profile' following.id %} ">
-                        {{ following }}
-                    </a>
-                </li>
+                <li><a href="{% url 'rutalk:profile' following.id %}">{{ following }}</a></li>
+            {% empty %}
+                <li>—</li>
             {% endfor %}
-            </ul>
-        </div>
-    </div>
+        </ul>
 
-    <div class="block">
-        <h3 class="title is-4">
-            {{profile.user.username}} is followed by:
-        </h3>
-        <div class="content">
-            <ul>
+        <h3>{{ profile.user.username }} is followed by:</h3>
+        <ul>
             {% for follower in profile.followed_by.all %}
-                <li>
-                    <a href="{% url 'rutalk:profile' follower.id %} ">
-                        {{ follower }}
-                    </a>
-                </li>
+                <li><a href="{% url 'rutalk:profile' follower.id %}">{{ follower }}</a></li>
+            {% empty %}
+                <li>—</li>
             {% endfor %}
-            </ul>
-        </div>
-    </div>
+        </ul>
 
-    <div class="block">
-        <a href="{% url 'rutalk:password_change' %}">Change password</a>
-    </div>
-
+        <a href="{% url 'rutalk:password_change' %}" class="simple-link">Change password</a>
+    </section>
 </div>
-
 {% endblock content %}

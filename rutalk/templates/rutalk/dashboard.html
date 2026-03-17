@@ -1,10 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-    Hello, {{ user.username|default:"Guest" }}!
-    <hr />
-    {% if user.is_authenticated %}
-    {% else %}
-        <a href="{% url 'rutalk:login' %}">Login</a>
-        <a href="{% url 'rutalk:sign_up' %}">Sign up</a>
-    {% endif %}
+<div class="auth-stage">
+    <section class="auth-card dashboard-card">
+        <div class="card-header">
+            <h2 class="card-title">Hello, {{ user.username|default:"Guest" }}!</h2>
+        </div>
+        <div class="card-body">
+            {% if user.is_authenticated %}
+                <div class="actions-center">
+                    <a href="{% url 'rutalk:feed' %}" class="btn">Open feed</a>
+                    <a href="{% url 'rutalk:profile' user.profile.pk %}" class="btn btn-secondary">My profile</a>
+                </div>
+            {% else %}
+                <div class="actions-center">
+                    <a href="{% url 'rutalk:login' %}" class="btn">Login</a>
+                    <a href="{% url 'rutalk:sign_up' %}" class="btn btn-secondary">Sign Up</a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
 {% endblock content %}

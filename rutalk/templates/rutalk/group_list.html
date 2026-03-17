@@ -1,20 +1,26 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="columns">
-    <div class="column is-three-quarters">
-        <h1 class="title">All groups</h1>
-        {% for group in groups %}
-            <div class="box">
-                <h2 class="title is-4"><a href="{% url 'rutalk:group' group.pk %}">{{ group.name }}</a></h2>
-                <p>{{ group.description|truncatewords:30 }}</p>
-                <small>Members: {{ group.memberships.count }}</small>
-            </div>
-        {% empty %}
-            <p>No groups yet.</p>
-        {% endfor %}
-    </div>
-    <div class="column">
-        <a href="{% url 'rutalk:group_create' %}" class="button is-primary is-fullwidth">Create group</a>
-    </div>
+<div class="section-row">
+    <h1 class="section-title">All Groups</h1>
+    <a href="{% url 'rutalk:group_create' %}" class="btn">Create group</a>
 </div>
+
+{% if groups %}
+<div class="content-list">
+    {% for group in groups %}
+        <article class="list-card group-list-card">
+            <h3><a href="{% url 'rutalk:group' group.pk %}">{{ group.name }}</a></h3>
+            <p>{{ group.description|default:"Без описания" }}</p>
+            <small>Members: {{ group.memberships.count }}</small>
+        </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="content-list">
+    <article class="list-card group-list-card">
+        <p>No groups yet.</p>
+    </article>
+</div>
+{% endif %}
 {% endblock %}

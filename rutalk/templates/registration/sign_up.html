@@ -1,12 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Sign Up</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Sign Up" />
-    </form>
-    <p>
-        <a href="{% url 'rutalk:dashboard' %}">Back to dashboard</a>
-    </p>
+<div class="auth-stage">
+    <section class="auth-card">
+        <div class="card-header">
+            <h2 class="card-title">Sign Up</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    <div class="form-row">
+                        {% if field.help_text %}
+                            <div class="help-text">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                        {{ field }}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                <div class="actions-center" style="margin-top:22px;">
+                    <button type="submit" class="btn">Create Account</button>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'rutalk:dashboard' %}" class="btn btn-secondary">Back to dashboard</a>
+        </div>
+    </section>
+</div>
 {% endblock content %}

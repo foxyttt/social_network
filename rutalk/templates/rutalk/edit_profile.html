@@ -1,13 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="column is-half is-offset-one-quarter">
-    <h1 class="title">Edit Profile</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="button is-primary">Save</button>
-        <a href="{% url 'rutalk:profile' user.profile.pk %}" class="button is-light">Cancel</a>
-    </form>
+<div class="page-stage">
+    <section class="app-card wide">
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <div class="app-card__header">
+                <h2 class="app-card__title">Edit Profile</h2>
+            </div>
+            <div class="app-card__body">
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    <div class="form-row">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                        {{ field }}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="app-card__footer">
+                <div class="actions-center">
+                    <button type="submit" class="btn">Save</button>
+                    <a href="{% url 'rutalk:profile' user.profile.pk %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </section>
 </div>
 {% endblock %}

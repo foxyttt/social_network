@@ -1,24 +1,28 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1 class="title">Create new group</h1>
-<form method="post">
-    {% csrf_token %}
-    <div class="field">
-        <label class="label">Group name</label>
-        <div class="control">
-            <input class="input" type="text" name="name" required>
+<div class="form-page-shell">
+    <h1 class="form-page-title">Create New Group</h1>
+    <section class="form-inline-card">
+        <div class="app-card__body">
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="form-row">
+                    <label for="{{ form.name.id_for_label }}">Group Name</label>
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.description.id_for_label }}">Description</label>
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+                <div class="actions-row" style="margin-top: 8px;">
+                    <button type="submit" class="btn">Create</button>
+                </div>
+            </form>
         </div>
-    </div>
-    <div class="field">
-        <label class="label">Description</label>
-        <div class="control">
-            <textarea class="textarea" name="description" rows="3"></textarea>
-        </div>
-    </div>
-    <div class="field">
-        <div class="control">
-            <button type="submit" class="button is-primary">Create</button>
-        </div>
-    </div>
-</form>
+    </section>
+</div>
 {% endblock %}

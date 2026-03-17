@@ -1,69 +1,64 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="columns">
-    <div class="column is-one-third">
-        <h1 class="title">{{ group.name }}</h1>
-        <p>{{ group.description }}</p>
-        <p><small>Created: {{ group.created_at }}</small></p>
-        {% if not is_member %}
-            <a href="{% url 'rutalk:group_join' group.pk %}" class="button is-success">Join</a>
-        {% else %}
-            <span class="tag is-info">You are a member</span>
-            <a href="{% url 'rutalk:group_leave' group.pk %}" class="button is-light">Leave</a>
-        {% endif %}
-
-        <hr>
-
-        {% if is_member %}
-            <h2 class="title is-5">Create a post</h2>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <!-- Поле body -->
-                <div class="field">
-                    <div class="control">
-                        {{ form.body }}
-                    </div>
-                </div>
-                <!-- Поле image с Bulma-стилизацией -->
-                <div class="field">
-                    <label class="label">{{ form.image.label }}</label>
-                    <div class="control">
-                        <div class="file is-boxed is-success">
-                            <label class="file-label">
-                                {{ form.image }}
-                                <span class="file-cta">
-                                    <span class="file-icon">📁</span>
-                                    <span class="file-label">Choose image…</span>
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                    {% if form.image.errors %}
-                        <p class="help is-danger">{{ form.image.errors }}</p>
-                    {% endif %}
-                </div>
-                <button type="submit" class="button is-success">Post</button>
-            </form>
-        {% endif %}
+<div class="group-layout">
+    <div class="group-side-stack">
+        <section class="group-main-card">
+            <div style="text-align:center;">
+                <div class="group-pill">Группа</div>
+                <h1 class="group-big-title">{{ group.name }}</h1>
+                <p class="group-created">Created: {{ group.created_at|date:"F j, Y" }}</p>
+            </div>
+            <div class="actions-row">
+                {% if not is_member %}
+                    <a href="{% url 'rutalk:group_join' group.pk %}" class="btn">Join</a>
+                {% else %}
+                    <span class="btn btn-secondary btn-status">You are a member</span>
+                    <a href="{% url 'rutalk:group_leave' group.pk %}" class="btn btn-danger">Leave</a>
+                {% endif %}
+            </div>
+        </section>
     </div>
 
-    <div class="column is-two-thirds">
-        <h2 class="title is-4">Posts</h2>
-        {% for post in posts %}
-            <div class="box">
-                <a href="{% url 'rutalk:post_detail' post.id %}">
-                <p>{{ post.body }}</p>
-                </a>
-                {% if post.image %}
-                    <figure class="image">
-                        <img src="{{ post.image.url }}" alt="Post image">
-                    </figure>
-                {% endif %}
-                <small>{{ post.user.username }} • {{ post.created_at }}</small>
+    <div class="group-posts-panel">
+        <h2>Posts</h2>
+        {% if posts %}
+            <div class="post-list">
+                {% for post in posts %}
+                    <article class="post-item">
+                        <a href="{% url 'rutalk:post_detail' post.id %}" style="text-decoration:none; color:inherit;">
+                            <p>{{ post.body }}</p>
+                            {% if post.image %}
+                                <img src="{{ post.image.url }}" alt="Post image">
+                            {% endif %}
+                            <small>{{ post.user.username }} • {{ post.created_at }}</small>
+                        </a>
+                    </article>
+                {% endfor %}
             </div>
-        {% empty %}
-            <p>No posts yet.</p>
-        {% endfor %}
+        {% else %}
+            <p class="group-empty-copy">No posts yet.</p>
+        {% endif %}
+
+        {% if is_member %}
+            <section class="post-compose-card">
+                <h3 class="post-compose-title">Create a Post</h3>
+                <hr class="post-compose-divider">
+                <form method="post" enctype="multipart/form-data" class="auth-form">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        {{ form.body }}
+                        {{ form.body.errors }}
+                    </div>
+                    <div class="file-upload-row">
+                        <label for="{{ form.image.id_for_label }}">Upload Image</label>
+                        {{ form.image }}
+                        {{ form.image.errors }}
+                    </div>
+                    <button type="submit" class="btn post-submit">Post</button>
+                </form>
+            </section>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -1,51 +1,46 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Include the Bulma CSS framework for styling -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <title>RuTalk</title>
+    <link rel="stylesheet" href="{% static 'rutalk/css/app.css' %}">
 </head>
 <body>
-    <section class="hero is-small is-success mb-4">
-        <div class="hero-body">
-            <div class="columns is-vcentered">
-                <div class="column">
+    <div class="site-shell">
+        <div class="page-frame">
+            <header class="brand-hero">
+                <div style="display:flex; justify-content:space-between; gap:20px; align-items:flex-start;">
+                    <div>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'rutalk:feed' %}" class="brand-link">
+                                <h1 class="brand-title">RuTalk</h1>
+                                <p class="brand-subtitle">Your tiny social network built with Django</p>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'rutalk:dashboard' %}" class="brand-link">
+                                <h1 class="brand-title">RuTalk</h1>
+                                <p class="brand-subtitle">Your tiny social network built with Django</p>
+                            </a>
+                        {% endif %}
+                    </div>
                     {% if user.is_authenticated %}
-                    <a href="{% url 'rutalk:feed' %}" class="has-text-white">
-                        <h1 class="title is-1">RuTalk</h1>
-                        <p class="subtitle is-4">
-                            Your tiny social network built with Django
-                        </p>
-                    </a>
-                    {% else %}
-                    <h1 class="title is-1">RuTalk</h1>
-                    <p class="subtitle is-4">
-                        Your tiny social network built with Django
-                    </p>
+                        <div class="topbar-actions">
+                            <form method="post" action="{% url 'rutalk:logout' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{% url 'rutalk:dashboard' %}">
+                                <button type="submit" class="btn btn-light">Logout</button>
+                            </form>
+                        </div>
                     {% endif %}
                 </div>
-                {% if user.is_authenticated %}
-                <div class="column is-narrow">
-                    <!-- Простая форма выхода, без лишней переменной form -->
-                    <form method="post" action="{% url 'rutalk:logout' %}">
-                        {% csrf_token %}
-                        <input type="submit" value="Logout" class="button is-light is-small" />
-                        <input type="hidden" name="next" value="{% url 'rutalk:dashboard' %}" />
-                    </form>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </section>
+            </header>
 
-    <div class="container">
-        <div class="columns">
-            {% block content %}
-            {% endblock content %}
+            <main class="content-area">
+                {% block content %}{% endblock content %}
+            </main>
         </div>
     </div>
 </body>

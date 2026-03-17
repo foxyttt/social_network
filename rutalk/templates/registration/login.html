@@ -1,13 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Login</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Login" />
-    </form>
-    <p>
-        <a href="{% url 'rutalk:password_reset' %}">Forgot your password?</a>
-        <a href="{% url 'rutalk:dashboard' %}">Back to dashboard</a>
-    </p>
+<div class="auth-stage">
+    <section class="auth-card">
+        <div class="card-header">
+            <h2 class="card-title">Login</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="form-row">
+                    <label for="id_username">Username:</label>
+                    {{ form.username }}
+                    {{ form.username.errors }}
+                </div>
+                <div class="form-row">
+                    <label for="id_password">Password:</label>
+                    {{ form.password }}
+                    {{ form.password.errors }}
+                </div>
+                <div class="actions-center" style="margin-top:22px;">
+                    <button type="submit" class="btn">Login</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
 {% endblock content %}
