@@ -4,6 +4,7 @@ from django.db.models import DO_NOTHING
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
+from django.core.validators import FileExtensionValidator
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -13,6 +14,8 @@ class Profile(models.Model):
                                      blank=True
                                      )
 
+    avatar = models.ImageField(upload_to='profile_images/', blank=True, null=True,
+                              validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     first_name = models.CharField(max_length=30, blank=True, verbose_name='Имя')
     last_name = models.CharField(max_length=30, blank=True, verbose_name='Фамилия')
     patronymic = models.CharField(max_length=30, blank=True, verbose_name='Отчество')
@@ -59,7 +62,8 @@ class Post(models.Model):
     user = models.ForeignKey(User, related_name='posts', on_delete=DO_NOTHING)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='posts')
     body = models.CharField(max_length=10000)
-    image = models.ImageField(upload_to='post_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='post_images/', blank=True, null=True,
+                              validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])])
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -73,7 +77,8 @@ class Comment(models.Model):
     user = models.ForeignKey(User, related_name='comments', on_delete=DO_NOTHING)
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
     body = models.CharField(max_length=1000)
-    # image = models.ImageField(upload_to='post_images/', blank=True, null=True) TODO: придумать как это нормально реализовать
+    image = models.ImageField(upload_to='comment_images/', blank=True, null=True,
+                              validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])])
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
