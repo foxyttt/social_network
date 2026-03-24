@@ -67,7 +67,7 @@ class GroupForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['first_name', 'last_name', 'patronymic', 'bio', 'birth_date', 'education', 'phone']
+        fields = ['avatar', 'first_name', 'last_name', 'patronymic', 'bio', 'birth_date', 'education', 'phone']
         widgets = {
             'birth_date': forms.DateInput(attrs={'type': 'date'}),
             'bio': forms.Textarea(attrs={'rows': 3}),

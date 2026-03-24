@@ -17,12 +17,12 @@
                         {% if user.is_authenticated %}
                             <a href="{% url 'rutalk:feed' %}" class="brand-link">
                                 <h1 class="brand-title">RuTalk</h1>
-                                <p class="brand-subtitle">Your tiny social network built with Django</p>
+                                
                             </a>
                         {% else %}
                             <a href="{% url 'rutalk:dashboard' %}" class="brand-link">
                                 <h1 class="brand-title">RuTalk</h1>
-                                <p class="brand-subtitle">Your tiny social network built with Django</p>
+                                
                             </a>
                         {% endif %}
                     </div>

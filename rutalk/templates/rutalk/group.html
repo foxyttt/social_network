@@ -9,7 +9,7 @@
                 <h1 class="group-big-title">{{ group.name }}</h1>
                 <p class="group-created">Created: {{ group.created_at|date:"F j, Y" }}</p>
             </div>
-            <div class="actions-row">
+            <div class="actions-row group-actions-row">
                 {% if not is_member %}
                     <a href="{% url 'rutalk:group_join' group.pk %}" class="btn">Join</a>
                 {% else %}
@@ -17,7 +17,30 @@
                     <a href="{% url 'rutalk:group_leave' group.pk %}" class="btn btn-danger">Leave</a>
                 {% endif %}
             </div>
+            <div class="actions-row group-back-row">
+                <a href="{% url 'rutalk:group_list' %}" class="btn btn-secondary">All Groups</a>
+            </div>
         </section>
+
+        {% if is_member %}
+            <section class="post-compose-card post-compose-card--stacked">
+                <h3 class="post-compose-title">Create a Post</h3>
+                <hr class="post-compose-divider">
+                <form method="post" enctype="multipart/form-data" class="auth-form">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        {{ form.body }}
+                        {{ form.body.errors }}
+                    </div>
+                    <div class="file-upload-row">
+                        <label for="{{ form.image.id_for_label }}">Upload Image</label>
+                        {{ form.image }}
+                        {{ form.image.errors }}
+                    </div>
+                    <button type="submit" class="btn post-submit">Post</button>
+                </form>
+            </section>
+        {% endif %}
     </div>
 
     <div class="group-posts-panel">
@@ -38,26 +61,6 @@
             </div>
         {% else %}
             <p class="group-empty-copy">No posts yet.</p>
-        {% endif %}
-
-        {% if is_member %}
-            <section class="post-compose-card">
-                <h3 class="post-compose-title">Create a Post</h3>
-                <hr class="post-compose-divider">
-                <form method="post" enctype="multipart/form-data" class="auth-form">
-                    {% csrf_token %}
-                    <div class="form-row">
-                        {{ form.body }}
-                        {{ form.body.errors }}
-                    </div>
-                    <div class="file-upload-row">
-                        <label for="{{ form.image.id_for_label }}">Upload Image</label>
-                        {{ form.image }}
-                        {{ form.image.errors }}
-                    </div>
-                    <button type="submit" class="btn post-submit">Post</button>
-                </form>
-            </section>
         {% endif %}
     </div>
 </div>

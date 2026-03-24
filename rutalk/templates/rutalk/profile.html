@@ -7,11 +7,25 @@
             <h2 class="app-card__title">About</h2>
         </div>
         <div class="app-card__body">
+            <div class="profile-top">
+                <div class="profile-avatar">
+                    {% if profile.avatar %}
+                        <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}">
+                    {% else %}
+                        <span>{{ profile.user.username|first|upper }}</span>
+                    {% endif %}
+                </div>
+                <div class="profile-identity">
+                    <h3>{{ profile.user.username }}</h3>
+                    <div class="small-muted">@{{ profile.user.username }}</div>
+                </div>
+            </div>
+
             <div class="profile-data">
                 <div class="profile-row"><strong>Имя:</strong><span>{{ profile.first_name|default:"—" }}</span></div>
                 <div class="profile-row"><strong>Фамилия:</strong><span>{{ profile.last_name|default:"—" }}</span></div>
                 <div class="profile-row"><strong>Отчество:</strong><span>{{ profile.patronymic|default:"—" }}</span></div>
-                <div class="profile-row"><strong>Дата рождения:</strong><span>{{ profile.birth_date|date:"d.m.Y"|default:"—" }}</span></div>
+                <div class="profile-row"><strong>Дата рождения:</strong><span>{% if profile.birth_date %}{{ profile.birth_date|date:"d.m.Y" }}{% else %}—{% endif %}</span></div>
                 <div class="profile-row"><strong>О себе:</strong><span>{{ profile.bio|default:"—" }}</span></div>
                 <div class="profile-row"><strong>Место учебы/работы:</strong><span>{{ profile.education|default:"—" }}</span></div>
                 <div class="profile-row"><strong>Телефон:</strong><span>{{ profile.phone|default:"—" }}</span></div>
@@ -20,7 +34,6 @@
         <div class="app-card__footer actions-left">
             {% if request.user == profile.user %}
                 <a href="{% url 'rutalk:edit_profile' %}" class="btn">Edit Profile</a>
-                <button class="btn btn-danger" type="button">Unfollow</button>
             {% else %}
                 <form method="post" style="display:flex; gap:12px; flex-wrap:wrap; margin:0;">
                     {% csrf_token %}

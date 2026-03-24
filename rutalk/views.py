@@ -50,7 +50,7 @@ def post_detail(request, pk):
     comments = post.comments.all().order_by('-created_at')
 
     if request.method == 'POST':
-        form = CommentForm(request.POST)
+        form = CommentForm(request.POST, request.FILES)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.user = request.user
@@ -119,7 +119,7 @@ def group_leave(request, pk):
 def edit_profile(request):
     profile = request.user.profile
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             return redirect('rutalk:profile', pk=profile.pk)

@@ -1,35 +1,71 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="column">
-    <div class="box">
-        <p>{{ post.body }}</p>
-        {% if post.image %}
-            <figure class="image">
-                <img src="{{ post.image.url }}" alt="Post image">
-            </figure>
-        {% endif %}
-        <span class="is-small has-text-grey-light">
-            {{ post.created_at }} by {{ post.user.username }}
-        </span>
-    </div>
-
-    <h3>Comments</h3>
-    {% for comment in comments %}
-        <div class="box">
-            <p>{{ comment.body }}</p>
-            <span class="is-small has-text-grey-light">
-                {{ comment.created_at }} by {{ comment.user.username }}
-            </span>
+<div class="post-detail-wrap">
+    <section class="post-detail-card">
+        <div class="post-detail-head">
+            <div class="comment-head">
+                {% if post.user.profile.avatar %}
+                    <img class="comment-avatar-img" src="{{ post.user.profile.avatar.url }}" alt="{{ post.user.username }}">
+                {% else %}
+                    <span class="comment-avatar-fallback">{{ post.user.username|first|upper }}</span>
+                {% endif %}
+                <div>
+                    <div class="comment-author">{{ post.user.username }}</div>
+                    <div class="small-muted">{{ post.created_at }}</div>
+                </div>
+            </div>
         </div>
-    {% empty %}
-        <p>No comments yet.</p>
-    {% endfor %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="button is-success">Send</button>
-    </form>
+        <div class="post-content">{{ post.body }}</div>
+
+        {% if post.image %}
+            <div class="post-image-wrap">
+                <img src="{{ post.image.url }}" alt="Post image" class="post-image">
+            </div>
+        {% endif %}
+
+        <section class="comments-block">
+            <h3>Comments</h3>
+
+            {% for comment in comments %}
+                <article class="comment-card">
+                    <div class="comment-head">
+                        {% if comment.user.profile.avatar %}
+                            <img class="comment-avatar-img" src="{{ comment.user.profile.avatar.url }}" alt="{{ comment.user.username }}">
+                        {% else %}
+                            <span class="comment-avatar-fallback">{{ comment.user.username|first|upper }}</span>
+                        {% endif %}
+                        <div>
+                            <div class="comment-author">{{ comment.user.username }}</div>
+                            <div class="small-muted">{{ comment.created_at }}</div>
+                        </div>
+                    </div>
+                    <div class="comment-content">{{ comment.body }}</div>
+                    {% if comment.image %}
+                        <div class="comment-image-wrap">
+                            <img src="{{ comment.image.url }}" alt="Comment image" class="comment-image">
+                        </div>
+                    {% endif %}
+                </article>
+            {% empty %}
+                <p>No comments yet.</p>
+            {% endfor %}
+
+            <form method="post" enctype="multipart/form-data" class="comment-form">
+                {% csrf_token %}
+                <div class="form-row">
+                    {{ form.body }}
+                    {{ form.body.errors }}
+                </div>
+                <div class="file-upload-row">
+                    <label for="{{ form.image.id_for_label }}">Add image</label>
+                    {{ form.image }}
+                    {{ form.image.errors }}
+                </div>
+                <button type="submit" class="btn">Send</button>
+            </form>
+        </section>
+    </section>
 </div>
 {% endblock %}

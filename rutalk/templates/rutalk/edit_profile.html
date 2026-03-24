@@ -2,29 +2,47 @@
 
 {% block content %}
 <div class="page-stage">
-    <section class="app-card wide">
-        <form method="post" class="auth-form">
-            {% csrf_token %}
-            <div class="app-card__header">
-                <h2 class="app-card__title">Edit Profile</h2>
-            </div>
-            <div class="app-card__body">
+    <section class="app-card wide profile-edit-card">
+        <div class="app-card__header">
+            <h2 class="app-card__title">Edit Profile</h2>
+        </div>
+        <div class="app-card__body">
+            <form method="post" enctype="multipart/form-data" class="auth-form profile-edit-form">
+                {% csrf_token %}
                 {{ form.non_field_errors }}
+
+                <div class="avatar-upload-panel">
+                    <div class="avatar-upload-preview">
+                        {% if user.profile.avatar %}
+                            <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}">
+                        {% else %}
+                            <span>{{ user.username|first|upper }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="avatar-upload-meta">
+                        <label for="{{ form.avatar.id_for_label }}">Avatar:</label>
+                        {{ form.avatar }}
+                        {{ form.avatar.errors }}
+                        <div class="help-text">JPG, JPEG or PNG</div>
+                    </div>
+                </div>
+
                 {% for field in form %}
+                    {% if field.name != 'avatar' %}
                     <div class="form-row">
                         <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
                         {{ field }}
                         {{ field.errors }}
                     </div>
+                    {% endif %}
                 {% endfor %}
-            </div>
-            <div class="app-card__footer">
-                <div class="actions-center">
+
+                <div class="actions-center" style="margin-top: 18px;">
                     <button type="submit" class="btn">Save</button>
                     <a href="{% url 'rutalk:profile' user.profile.pk %}" class="btn btn-secondary">Cancel</a>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </section>
 </div>
 {% endblock %}
