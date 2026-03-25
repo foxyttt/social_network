@@ -4,7 +4,7 @@
 <div class="page-stage">
     <section class="app-card wide profile-edit-card">
         <div class="app-card__header">
-            <h2 class="app-card__title">Edit Profile</h2>
+            <h2 class="app-card__title">Редактирование профиля</h2>
         </div>
         <div class="app-card__body">
             <form method="post" enctype="multipart/form-data" class="auth-form profile-edit-form">
@@ -20,10 +20,10 @@
                         {% endif %}
                     </div>
                     <div class="avatar-upload-meta">
-                        <label for="{{ form.avatar.id_for_label }}">Avatar:</label>
+                        <label for="{{ form.avatar.id_for_label }}">Аватар:</label>
                         {{ form.avatar }}
                         {{ form.avatar.errors }}
-                        <div class="help-text">JPG, JPEG or PNG</div>
+                        <div class="help-text">Форматы: JPG, JPEG или PNG</div>
                     </div>
                 </div>
 
@@ -38,8 +38,8 @@
                 {% endfor %}
 
                 <div class="actions-center" style="margin-top: 18px;">
-                    <button type="submit" class="btn">Save</button>
-                    <a href="{% url 'rutalk:profile' user.profile.pk %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn">Сохранить</button>
+                    <a href="{% url 'rutalk:profile' user.profile.pk %}" class="btn btn-secondary">Отмена</a>
                 </div>
             </form>
         </div>

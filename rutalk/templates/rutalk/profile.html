@@ -4,7 +4,7 @@
 <div class="page-grid">
     <section class="app-card wide">
         <div class="app-card__header">
-            <h2 class="app-card__title">About</h2>
+            <h2 class="app-card__title">Профиль</h2>
         </div>
         <div class="app-card__body">
             <div class="profile-top">
@@ -27,29 +27,30 @@
                 <div class="profile-row"><strong>Отчество:</strong><span>{{ profile.patronymic|default:"—" }}</span></div>
                 <div class="profile-row"><strong>Дата рождения:</strong><span>{% if profile.birth_date %}{{ profile.birth_date|date:"d.m.Y" }}{% else %}—{% endif %}</span></div>
                 <div class="profile-row"><strong>О себе:</strong><span>{{ profile.bio|default:"—" }}</span></div>
-                <div class="profile-row"><strong>Место учебы/работы:</strong><span>{{ profile.education|default:"—" }}</span></div>
+                <div class="profile-row"><strong>Место учёбы/работы:</strong><span>{{ profile.education|default:"—" }}</span></div>
                 <div class="profile-row"><strong>Телефон:</strong><span>{{ profile.phone|default:"—" }}</span></div>
             </div>
         </div>
         <div class="app-card__footer actions-left">
             {% if request.user == profile.user %}
-                <a href="{% url 'rutalk:edit_profile' %}" class="btn">Edit Profile</a>
+                <a href="{% url 'rutalk:edit_profile' %}" class="btn">Редактировать профиль</a>
+                <a href="{% url 'rutalk:feed' %}" class="btn btn-secondary">На главную</a>
             {% else %}
                 <form method="post" style="display:flex; gap:12px; flex-wrap:wrap; margin:0;">
                     {% csrf_token %}
                     {% if profile in user.profile.follows.all %}
-                        <button class="btn btn-danger" name="follow" value="unfollow">Unfollow</button>
+                        <button class="btn btn-danger" name="follow" value="unfollow">Отписаться</button>
                     {% else %}
-                        <button class="btn" name="follow" value="follow">Follow</button>
+                        <button class="btn" name="follow" value="follow">Подписаться</button>
                     {% endif %}
                 </form>
             {% endif %}
-            <a href="{% url 'rutalk:profile_list' %}" class="btn btn-secondary">All Profiles</a>
+            <a href="{% url 'rutalk:profile_list' %}" class="btn btn-secondary">Все профили</a>
         </div>
     </section>
 
     <section class="profile-extra">
-        <h3>{{ profile.user.username }} follows:</h3>
+        <h3>На кого подписан {{ profile.user.username }}:</h3>
         <ul>
             {% for following in profile.follows.all %}
                 <li><a href="{% url 'rutalk:profile' following.id %}">{{ following }}</a></li>
@@ -58,7 +59,7 @@
             {% endfor %}
         </ul>
 
-        <h3>{{ profile.user.username }} is followed by:</h3>
+        <h3>Подписчики {{ profile.user.username }}:</h3>
         <ul>
             {% for follower in profile.followed_by.all %}
                 <li><a href="{% url 'rutalk:profile' follower.id %}">{{ follower }}</a></li>
@@ -67,7 +68,9 @@
             {% endfor %}
         </ul>
 
-        <a href="{% url 'rutalk:password_change' %}" class="simple-link">Change password</a>
+        {% if request.user == profile.user %}
+            <a href="{% url 'rutalk:password_change' %}" class="simple-link">Изменить пароль</a>
+        {% endif %}
     </section>
 </div>
 {% endblock content %}
