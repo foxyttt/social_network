@@ -2,7 +2,8 @@
 
 {% block content %}
 <div class="section-row">
-    <h1 class="section-title">All Profiles</h1>
+    <h1 class="section-title">Все профили</h1>
+    <a href="{% url 'rutalk:feed' %}" class="btn btn-secondary">На главную</a>
 </div>
 
 {% if profiles %}
@@ -10,7 +11,9 @@
     {% for profile in profiles %}
         <a href="{% url 'rutalk:profile' profile.id %}" class="profile-list-link">
             <article class="list-card profile-list-card">
-                <div class="profile-avatar">{{ profile.user.username|first|upper }}</div>
+                <div class="profile-avatar">
+                    {% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}">{% else %}{{ profile.user.username|first|upper }}{% endif %}
+                </div>
                 <div>
                     <div class="profile-list-name">{{ profile.user.username }}</div>
                     <div class="profile-list-handle">@{{ profile.user.username }}</div>
@@ -19,5 +22,7 @@
         </a>
     {% endfor %}
 </div>
+{% else %}
+<div class="content-list"><article class="list-card"><p>Других профилей пока нет.</p></article></div>
 {% endif %}
 {% endblock content %}

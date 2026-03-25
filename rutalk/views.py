@@ -1,8 +1,11 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Profile, Post, Comment, Group, Membership, ChannelMembership, Channel
-from .forms import PostForm, CustomUserCreationForm, CommentForm, GroupForm, ProfileForm, ChannelForm
+from .models import Profile, Post, Group, Membership, ChannelMembership, Channel
+from .forms import (
+    PostForm, CustomUserCreationForm, CommentForm, GroupForm, ProfileForm, ChannelForm
+)
+
 
 def sign_up(request):
     if request.method == 'POST':
@@ -15,29 +18,30 @@ def sign_up(request):
         form = CustomUserCreationForm()
     return render(request, 'registration/sign_up.html', {'form': form})
 
+
+@login_required
 def feed(request):
-    groups = Group.objects.filter(
-        memberships__user=request.user
-    ).order_by('-created_at')
-    return render(
-        request,
-        'rutalk/feed.html',
-        {'groups': groups},
-    )
+    groups = Group.objects.filter(memberships__user=request.user).order_by('-created_at')
+    channels = Channel.objects.filter(memberships__user=request.user).order_by('-created_at')
+    return render(request, 'rutalk/feed.html', {'groups': groups, 'channels': channels})
+
 
 def dashboard(request):
     return render(request, 'rutalk/dashboard.html')
 
+
+@login_required
 def profile_list(request):
     profiles = Profile.objects.exclude(user=request.user)
     return render(request, 'rutalk/profile_list.html', {'profiles': profiles})
 
+
+@login_required
 def profile(request, pk):
-    profile = Profile.objects.get(pk=pk)
+    profile = get_object_or_404(Profile, pk=pk)
     if request.method == 'POST':
         current_user_profile = request.user.profile
-        data = request.POST
-        action = data.get('follow')
+        action = request.POST.get('follow')
         if action == 'follow':
             current_user_profile.follows.add(profile)
         elif action == 'unfollow':
@@ -45,6 +49,8 @@ def profile(request, pk):
         current_user_profile.save()
     return render(request, 'rutalk/profile.html', {'profile': profile})
 
+
+@login_required
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comments = post.comments.all().order_by('-created_at')
@@ -60,20 +66,17 @@ def post_detail(request, pk):
     else:
         form = CommentForm()
 
-    return render(request, 'rutalk/post_detail.html', {
-        'post': post,
-        'comments': comments,
-        'form': form,
-    })
+    return render(request, 'rutalk/post_detail.html', {'post': post, 'comments': comments, 'form': form})
 
+
+@login_required
 def group_list(request):
     groups = Group.objects.all().order_by('-created_at')
     channels = Channel.objects.all().order_by('-created_at')
-    return render(request, 'rutalk/group_list.html', {
-        'groups': groups,
-        'channels': channels,
-    })
+    return render(request, 'rutalk/group_list.html', {'groups': groups, 'channels': channels})
 
+
+@login_required
 def group(request, pk):
     group = get_object_or_404(Group, pk=pk)
     is_member = Membership.objects.filter(user=request.user, group=group).exists()
@@ -90,12 +93,8 @@ def group(request, pk):
     else:
         form = PostForm() if is_member else None
 
-    return render(request, 'rutalk/group.html', {
-        'group': group,
-        'is_member': is_member,
-        'posts': posts,
-        'form': form,
-    })
+    return render(request, 'rutalk/group.html', {'group': group, 'is_member': is_member, 'posts': posts, 'form': form})
+
 
 @login_required
 def group_create(request):
@@ -111,24 +110,28 @@ def group_create(request):
         form = GroupForm()
     return render(request, 'rutalk/group_form.html', {'form': form})
 
+
 @login_required
 def group_join(request, pk):
     group = get_object_or_404(Group, pk=pk)
     Membership.objects.get_or_create(user=request.user, group=group)
     return redirect('rutalk:group', pk=group.pk)
 
+
 @login_required
 def group_leave(request, pk):
     group = get_object_or_404(Group, pk=pk)
     Membership.objects.filter(user=request.user, group=group).delete()
-    return redirect('rutalk:feed')
+    return redirect('rutalk:group_list')
 
+
+@login_required
 def channel_detail(request, pk):
     channel = get_object_or_404(Channel, pk=pk)
-    is_member = request.user.is_authenticated and ChannelMembership.objects.filter(user=request.user, channel=channel).exists()
+    is_member = ChannelMembership.objects.filter(user=request.user, channel=channel).exists()
     posts = channel.posts.all().order_by('-created_at')
+    can_create_post = request.user == channel.owner
 
-    can_create_post = request.user.is_authenticated and request.user == channel.creator
     if request.method == 'POST' and can_create_post:
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
@@ -148,17 +151,20 @@ def channel_detail(request, pk):
         'can_create_post': can_create_post,
     })
 
+
 @login_required
 def channel_join(request, pk):
     channel = get_object_or_404(Channel, pk=pk)
     ChannelMembership.objects.get_or_create(user=request.user, channel=channel)
     return redirect('rutalk:channel_detail', pk=channel.pk)
 
+
 @login_required
 def channel_leave(request, pk):
     channel = get_object_or_404(Channel, pk=pk)
     ChannelMembership.objects.filter(user=request.user, channel=channel).delete()
-    return redirect('rutalk:channel_detail', pk=channel.pk)
+    return redirect('rutalk:group_list')
+
 
 @login_required
 def channel_create(request):
@@ -166,7 +172,7 @@ def channel_create(request):
         form = ChannelForm(request.POST)
         if form.is_valid():
             channel = form.save(commit=False)
-            channel.creator = request.user
+            channel.owner = request.user
             channel.save()
             ChannelMembership.objects.create(user=request.user, channel=channel)
             return redirect('rutalk:channel_detail', pk=channel.pk)
@@ -174,6 +180,8 @@ def channel_create(request):
         form = ChannelForm()
     return render(request, 'rutalk/channel_form.html', {'form': form})
 
+
+@login_required
 def edit_profile(request):
     profile = request.user.profile
     if request.method == 'POST':

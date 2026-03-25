@@ -3,18 +3,18 @@
 <div class="auth-stage">
     <section class="auth-card dashboard-card">
         <div class="card-header">
-            <h2 class="card-title">Hello, {{ user.username|default:"Guest" }}!</h2>
+            <h2 class="card-title">Здравствуйте, {{ user.username|default:"Гость" }}!</h2>
         </div>
         <div class="card-body">
             {% if user.is_authenticated %}
                 <div class="actions-center">
-                    <a href="{% url 'rutalk:feed' %}" class="btn">Open feed</a>
-                    <a href="{% url 'rutalk:profile' user.profile.pk %}" class="btn btn-secondary">My profile</a>
+                    <a href="{% url 'rutalk:feed' %}" class="btn">Открыть ленту</a>
+                    <a href="{% url 'rutalk:profile' user.profile.pk %}" class="btn btn-secondary">Мой профиль</a>
                 </div>
             {% else %}
                 <div class="actions-center">
-                    <a href="{% url 'rutalk:login' %}" class="btn">Login</a>
-                    <a href="{% url 'rutalk:sign_up' %}" class="btn btn-secondary">Sign Up</a>
+                    <a href="{% url 'rutalk:login' %}" class="btn">Войти</a>
+                    <a href="{% url 'rutalk:sign_up' %}" class="btn btn-secondary">Регистрация</a>
                 </div>
             {% endif %}
         </div>

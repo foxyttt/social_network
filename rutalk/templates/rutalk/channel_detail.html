@@ -3,19 +3,20 @@
 {% block content %}
 <div class="group-layout">
     <div class="group-side-stack">
-        <section class="group-main-card">
+        <section class="group-main-card channel-main-card">
             <div style="text-align:center;">
-                <div class="group-pill">Группа</div>
-                <h1 class="group-big-title">{{ group.name }}</h1>
-                <p class="group-created">Создана: {{ group.created_at|date:"d.m.Y" }}</p>
-                {% if group.description %}<p class="group-description-copy">{{ group.description }}</p>{% endif %}
+                <div class="group-pill channel-pill">Канал</div>
+                <h1 class="group-big-title">{{ channel.name }}</h1>
+                <p class="group-created">Создан: {{ channel.created_at|date:"d.m.Y" }}</p>
+                {% if channel.description %}<p class="group-description-copy">{{ channel.description }}</p>{% endif %}
+                <p class="channel-note">Публиковать посты может только владелец канала.</p>
             </div>
             <div class="actions-row group-actions-row">
                 {% if not is_member %}
-                    <a href="{% url 'rutalk:group_join' group.pk %}" class="btn">Вступить</a>
+                    <a href="{% url 'rutalk:channel_join' channel.pk %}" class="btn">Подписаться</a>
                 {% else %}
-                    <span class="btn btn-secondary btn-status">Вы участник</span>
-                    <a href="{% url 'rutalk:group_leave' group.pk %}" class="btn btn-danger">Покинуть</a>
+                    <span class="btn btn-secondary btn-status">Вы подписаны</span>
+                    <a href="{% url 'rutalk:channel_leave' channel.pk %}" class="btn btn-danger">Отписаться</a>
                 {% endif %}
             </div>
             <div class="actions-row group-back-row">
@@ -23,8 +24,8 @@
             </div>
         </section>
 
-        {% if is_member %}
-            <section class="post-compose-card post-compose-card--stacked">
+        {% if can_create_post %}
+            <section class="post-compose-card post-compose-card--stacked channel-compose-card">
                 <h3 class="post-compose-title">Создать пост</h3>
                 <hr class="post-compose-divider">
                 <form method="post" enctype="multipart/form-data" class="auth-form">
@@ -45,11 +46,11 @@
     </div>
 
     <div class="group-posts-panel">
-        <h2>Посты</h2>
+        <h2>Посты канала</h2>
         {% if posts %}
             <div class="post-list">
                 {% for post in posts %}
-                    <article class="post-item">
+                    <article class="post-item post-item-channel">
                         <a href="{% url 'rutalk:post_detail' post.id %}" style="text-decoration:none; color:inherit;">
                             <p>{{ post.body }}</p>
                             {% if post.image %}

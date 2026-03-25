@@ -21,12 +21,12 @@
 
         {% if post.image %}
             <div class="post-image-wrap">
-                <img src="{{ post.image.url }}" alt="Post image" class="post-image">
+                <img src="{{ post.image.url }}" alt="Изображение поста" class="post-image">
             </div>
         {% endif %}
 
         <section class="comments-block">
-            <h3>Comments</h3>
+            <h3>Комментарии</h3>
 
             {% for comment in comments %}
                 <article class="comment-card">
@@ -44,12 +44,12 @@
                     <div class="comment-content">{{ comment.body }}</div>
                     {% if comment.image %}
                         <div class="comment-image-wrap">
-                            <img src="{{ comment.image.url }}" alt="Comment image" class="comment-image">
+                            <img src="{{ comment.image.url }}" alt="Изображение комментария" class="comment-image">
                         </div>
                     {% endif %}
                 </article>
             {% empty %}
-                <p>No comments yet.</p>
+                <p>Пока нет комментариев.</p>
             {% endfor %}
 
             <form method="post" enctype="multipart/form-data" class="comment-form">
@@ -59,11 +59,11 @@
                     {{ form.body.errors }}
                 </div>
                 <div class="file-upload-row">
-                    <label for="{{ form.image.id_for_label }}">Add image</label>
+                    <label for="{{ form.image.id_for_label }}">Добавить изображение</label>
                     {{ form.image }}
                     {{ form.image.errors }}
                 </div>
-                <button type="submit" class="btn">Send</button>
+                <button type="submit" class="btn">Отправить</button>
             </form>
         </section>
     </section>

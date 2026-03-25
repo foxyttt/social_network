@@ -4,27 +4,42 @@
 <div class="nav-page">
     <section class="nav-shell compact">
         <div class="nav-shell__header">
-            <h2 class="nav-shell__title">Navigation</h2>
+            <h2 class="nav-shell__title">Навигация</h2>
         </div>
         <div class="nav-shell__body">
             <div class="nav-list">
-                <a href="{% url 'rutalk:profile_list' %}" class="nav-link muted"><span class="button">All Profiles</span></a>
-                <a href="{% url 'rutalk:profile' request.user.profile.id %}" class="nav-link"><span class="button">My Profile</span></a>
-                <a href="{% url 'rutalk:group_list' %}" class="nav-link muted"><span class="button">All Groups</span></a>
+                <a href="{% url 'rutalk:profile_list' %}" class="nav-link muted"><span class="button">Все профили</span></a>
+                <a href="{% url 'rutalk:profile' request.user.profile.id %}" class="nav-link"><span class="button">Мой профиль</span></a>
+                <a href="{% url 'rutalk:group_list' %}" class="nav-link muted"><span class="button">Группы и каналы</span></a>
             </div>
         </div>
     </section>
 </div>
 
-{% if groups %}
+{% if groups or channels %}
 <div class="content-list">
     {% for group in groups %}
         <article class="list-card group-list-card">
+            <div class="entity-badge">Группа</div>
             <h3><a href="{% url 'rutalk:group' group.pk %}">{{ group.name }}</a></h3>
             <p>{{ group.description|default:"Без описания" }}</p>
-            <small>Members: {{ group.memberships.count }}</small>
+            <small>Участников: {{ group.memberships.count }}</small>
         </article>
     {% endfor %}
+    {% for channel in channels %}
+        <article class="list-card group-list-card channel-list-card">
+            <div class="entity-badge entity-badge-channel">Канал</div>
+            <h3><a href="{% url 'rutalk:channel_detail' channel.pk %}">{{ channel.name }}</a></h3>
+            <p>{{ channel.description|default:"Без описания" }}</p>
+            <small>Подписчиков: {{ channel.memberships.count }}</small>
+        </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="content-list">
+    <article class="list-card">
+        <p>Пока нет ни групп, ни каналов.</p>
+    </article>
 </div>
 {% endif %}
 {% endblock content %}

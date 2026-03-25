@@ -1,26 +1,59 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="section-row">
-    <h1 class="section-title">All Groups</h1>
-    <a href="{% url 'rutalk:group_create' %}" class="btn">Create group</a>
+<div class="section-row section-row-wrap">
+    <h1 class="section-title">Группы и каналы</h1>
+
+    <div class="actions-row">
+        <a href="{% url 'rutalk:group_create' %}" class="btn">Создать группу</a>
+        <a href="{% url 'rutalk:channel_create' %}" class="btn btn-secondary">Создать канал</a>
+    </div>
+<div class="groups-home-button-wrap">
+    <a href="{% url 'rutalk:feed' %}" class="btn btn-secondary">На главную</a>
+</div>
 </div>
 
-{% if groups %}
-<div class="content-list">
-    {% for group in groups %}
-        <article class="list-card group-list-card">
-            <h3><a href="{% url 'rutalk:group' group.pk %}">{{ group.name }}</a></h3>
-            <p>{{ group.description|default:"Без описания" }}</p>
-            <small>Members: {{ group.memberships.count }}</small>
-        </article>
-    {% endfor %}
+<div class="dual-entity-grid">
+    <section>
+        <div class="entity-section-title-row">
+            <h2 class="entity-section-title">Группы</h2>
+            <span class="entity-section-hint">Писать могут участники</span>
+        </div>
+        {% if groups %}
+        <div class="content-list entity-list">
+            {% for group in groups %}
+                <article class="list-card group-list-card">
+                    <div class="entity-badge">Группа</div>
+                    <h3><a href="{% url 'rutalk:group' group.pk %}">{{ group.name }}</a></h3>
+                    <p>{{ group.description|default:"Без описания" }}</p>
+                    <small>Участников: {{ group.memberships.count }}</small>
+                </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="content-list entity-list"><article class="list-card group-list-card"><p>Пока нет групп.</p></article></div>
+        {% endif %}
+    </section>
+
+    <section>
+        <div class="entity-section-title-row">
+            <h2 class="entity-section-title">Каналы</h2>
+            <span class="entity-section-hint">Писать может только владелец</span>
+        </div>
+        {% if channels %}
+        <div class="content-list entity-list">
+            {% for channel in channels %}
+                <article class="list-card group-list-card channel-list-card">
+                    <div class="entity-badge entity-badge-channel">Канал</div>
+                    <h3><a href="{% url 'rutalk:channel_detail' channel.pk %}">{{ channel.name }}</a></h3>
+                    <p>{{ channel.description|default:"Без описания" }}</p>
+                    <small>Подписчиков: {{ channel.memberships.count }}</small>
+                </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="content-list entity-list"><article class="list-card group-list-card channel-list-card"><p>Пока нет каналов.</p></article></div>
+        {% endif %}
+    </section>
 </div>
-{% else %}
-<div class="content-list">
-    <article class="list-card group-list-card">
-        <p>No groups yet.</p>
-    </article>
-</div>
-{% endif %}
 {% endblock %}
