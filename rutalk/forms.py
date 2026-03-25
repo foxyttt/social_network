@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Comment, Group, Profile
+from .models import Post, Comment, Group, Profile, Channel
 from django.contrib.auth.forms import UserCreationForm
 
 class PostForm(forms.ModelForm):
@@ -22,6 +22,12 @@ class PostForm(forms.ModelForm):
         ),
         label='Upload image',
     )
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if image and image.size > 10 * 1024 * 1024:  # 5 MB
+            raise forms.ValidationError('Image size must be no larger than 10 MB.')
+        return image
 
     class Meta:
         model = Post
@@ -52,6 +58,12 @@ class CommentForm(forms.ModelForm):
         label='Upload image',
     )
 
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if image and image.size > 10 * 1024 * 1024:  # 5 MB
+            raise forms.ValidationError('Image size must be no larger than 10 MB.')
+        return image
+
     class Meta:
         model = Comment
         exclude = ("user", "post",)
@@ -62,6 +74,14 @@ class GroupForm(forms.ModelForm):
         fields = ['name', 'description']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Group description...'}),
+        }
+
+class ChannelForm(forms.ModelForm):
+    class Meta:
+        model = Channel
+        fields = ['name', 'description']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Channel description...'}),
         }
 
 class ProfileForm(forms.ModelForm):

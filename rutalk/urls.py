@@ -1,6 +1,6 @@
 from django.urls import path, reverse_lazy
 from django.contrib.auth import views as auth_views
-from .views import dashboard, profile_list, profile, sign_up, feed, post_detail, group_list, group, group_join, group_leave, group_create, edit_profile
+from .views import dashboard, profile_list, profile, sign_up, feed, post_detail, group_list, group, group_join, group_leave, group_create, edit_profile, channel_join, channel_create, channel_detail, channel_leave
 
 app_name = 'rutalk'
 
@@ -50,10 +50,14 @@ urlpatterns = [
     path('post/<int:pk>/', post_detail, name='post_detail'), #страница отдельного поста
     path('profile_list/', profile_list, name='profile_list'), #страница со списком профилей
     path('profile/<int:pk>', profile, name='profile'), #страница профиля конкретного пользователя
-    path('groups/', group_list, name='group_list'), #список всех групп
+    path('groups/', group_list, name='group_list'), #список всех групп и каналов
     path('groups/<int:pk>/', group, name='group'), #страница отдельной группы
     path('groups/create/', group_create, name='group_create'), #страница создания группы
     path('groups/<int:pk>/join/', group_join, name='group_join'), #страница вступления
     path('groups/<int:pk>/leave/', group_leave, name='group_leave'), #страница покидания
+    path('channels/create/', channel_create, name='channel_create'), #страница создания канала
+    path('channels/<int:pk>/', channel_detail, name='channel_detail'), #страница отдельного канала
+    path('channels/<int:pk>/join/', channel_join, name='channel_join'), #страница вступления в канал
+    path('channels/<int:pk>/leave/', channel_leave, name='channel_leave'), #страница покидания канала
     path('profile/edit/', edit_profile, name='edit_profile'), #страница редактирования профиля
 ]

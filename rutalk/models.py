@@ -35,7 +35,7 @@ def create_profile(sender, instance, created, **kwargs):
         user_profile.follows.add(instance.profile)
         user_profile.save()
 
-class Group(models.Model): #TODO: добавить закрытые группы
+class Group(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500, blank=True)
     owner = models.ForeignKey(User, related_name='created_groups', on_delete=models.SET_NULL, null=True)
@@ -46,6 +46,18 @@ class Group(models.Model): #TODO: добавить закрытые группы
 
     def get_absolute_url(self):
         return reverse('rutalk:group_detail', args=[self.pk])
+
+class Channel(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=500, blank=True)
+    owner = models.ForeignKey(User, related_name='created_channels', on_delete=models.SET_NULL, null=True)
+    created_at = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('rutalk:channel_detail', args=[self.pk])
 
 class Membership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='memberships')
@@ -58,13 +70,30 @@ class Membership(models.Model):
     def __str__(self):
         return f"{self.user.username} in {self.group.name}"
 
+class ChannelMembership(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='channel_memberships')
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='memberships')
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'channel')
+
+    def __str__(self):
+        return f"{self.user.username} in {self.channel.name}"
+
 class Post(models.Model):
     user = models.ForeignKey(User, related_name='posts', on_delete=DO_NOTHING)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='posts')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True, related_name='posts')
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, null=True, blank=True, related_name='posts')
     body = models.CharField(max_length=10000)
     image = models.ImageField(upload_to='post_images/', blank=True, null=True,
                               validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])])
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not (self.group_id is None) ^ (self.channel_id is None):
+            raise ValueError("Post must belong to either a group or a channel, not both or none.")
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return (
