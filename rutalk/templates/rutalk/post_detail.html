@@ -1,23 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="post-detail-wrap">
-    <section class="post-detail-card">
-        <div class="post-detail-head">
-            <div class="comment-head">
-                {% if post.user.profile.avatar %}
-                    <img class="comment-avatar-img" src="{{ post.user.profile.avatar.url }}" alt="{{ post.user.username }}">
+<section class="post-detail-shell">
+    <article class="post-detail-card">
+        <div class="post-detail-topbar">
+            <div></div>
+            <a href="{{ back_url }}" class="btn btn-secondary">{{ back_label }}</a>
+        </div>
+
+        <div class="post-card__head">
+            <div class="post-author">
+                {% if post.author.profile.avatar %}
+                    <img class="comment-avatar-img" src="{{ post.author.profile.avatar.url }}" alt="{{ post.author.username }}">
                 {% else %}
-                    <span class="comment-avatar-fallback">{{ post.user.username|first|upper }}</span>
+                    <span class="comment-avatar-fallback">{{ post.author.username|first|upper }}</span>
                 {% endif %}
-                <div>
-                    <div class="comment-author">{{ post.user.username }}</div>
-                    <div class="small-muted">{{ post.created_at }}</div>
-                </div>
+            </div>
+            <div>
+                <div class="post-author-name">{{ post.author.username }}</div>
+                <div class="small-muted">{{ post.created_at }}</div>
             </div>
         </div>
 
-        <div class="post-content">{{ post.body }}</div>
+        <div class="post-content">{{ post_text }}</div>
 
         {% if post.image %}
             <div class="post-image-wrap">
@@ -25,47 +30,64 @@
             </div>
         {% endif %}
 
-        <section class="comments-block">
-            <h3>Комментарии</h3>
+        <div class="comments-block comments-block--full">
+            <div class="comments-block__header">
+                <h2>Комментарии</h2>
+                <span class="comments-count">{{ comment_items|length }}</span>
+            </div>
 
-            {% for comment in comments %}
-                <article class="comment-card">
-                    <div class="comment-head">
-                        {% if comment.user.profile.avatar %}
-                            <img class="comment-avatar-img" src="{{ comment.user.profile.avatar.url }}" alt="{{ comment.user.username }}">
-                        {% else %}
-                            <span class="comment-avatar-fallback">{{ comment.user.username|first|upper }}</span>
+            <div class="comments-list">
+                {% for item in comment_items %}
+                    {% with comment=item.obj %}
+                    <article class="comment-card">
+                        <div class="comment-head">
+                            {% if comment.author and comment.author.profile.avatar %}
+                                <img class="comment-avatar-img" src="{{ comment.author.profile.avatar.url }}" alt="{{ comment.author.username }}">
+                            {% elif comment.user and comment.user.profile.avatar %}
+                                <img class="comment-avatar-img" src="{{ comment.user.profile.avatar.url }}" alt="{{ comment.user.username }}">
+                            {% elif comment.author %}
+                                <span class="comment-avatar-fallback">{{ comment.author.username|first|upper }}</span>
+                            {% elif comment.user %}
+                                <span class="comment-avatar-fallback">{{ comment.user.username|first|upper }}</span>
+                            {% else %}
+                                <span class="comment-avatar-fallback">?</span>
+                            {% endif %}
+                            <div>
+                                <div class="comment-author">{{ comment.author.username|default:comment.user.username }}</div>
+                                <div class="small-muted">{{ comment.created_at }}</div>
+                            </div>
+                        </div>
+                        <div class="comment-content">{{ item.text }}</div>
+                        {% if comment.image %}
+                            <div class="comment-image-wrap">
+                                <img src="{{ comment.image.url }}" alt="Изображение комментария" class="comment-image">
+                            </div>
                         {% endif %}
-                        <div>
-                            <div class="comment-author">{{ comment.user.username }}</div>
-                            <div class="small-muted">{{ comment.created_at }}</div>
-                        </div>
-                    </div>
-                    <div class="comment-content">{{ comment.body }}</div>
-                    {% if comment.image %}
-                        <div class="comment-image-wrap">
-                            <img src="{{ comment.image.url }}" alt="Изображение комментария" class="comment-image">
-                        </div>
-                    {% endif %}
-                </article>
-            {% empty %}
-                <p>Пока нет комментариев.</p>
-            {% endfor %}
+                    </article>
+                    {% endwith %}
+                {% empty %}
+                    <div class="comments-empty">Пока нет комментариев.</div>
+                {% endfor %}
+            </div>
 
-            <form method="post" enctype="multipart/form-data" class="comment-form">
+            <form method="post" enctype="multipart/form-data" class="comment-form comment-form--full">
                 {% csrf_token %}
-                <div class="form-row">
-                    {{ form.body }}
-                    {{ form.body.errors }}
-                </div>
-                <div class="file-upload-row">
-                    <label for="{{ form.image.id_for_label }}">Добавить изображение</label>
-                    {{ form.image }}
-                    {{ form.image.errors }}
-                </div>
+                {% for field in comment_form %}
+                    <div class="form-row">
+                        {% if field.name == 'content' or field.name == 'text' or field.name == 'body' or field.name == 'message' %}
+                            {{ field }}
+                        {% elif field.name == 'image' %}
+                            <label for="{{ field.id_for_label }}">Добавить изображение</label>
+                            {{ field }}
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
                 <button type="submit" class="btn">Отправить</button>
             </form>
-        </section>
-    </section>
-</div>
+        </div>
+    </article>
+</section>
 {% endblock %}

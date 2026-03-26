@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -53,23 +54,45 @@ def profile(request, pk):
 @login_required
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    comments = post.comments.all().order_by('-created_at')
+    comments = post.comments.all().order_by('created_at')
+    comment_form = CommentForm()
 
     if request.method == 'POST':
-        form = CommentForm(request.POST, request.FILES)
-        if form.is_valid():
-            comment = form.save(commit=False)
+        comment_form = CommentForm(request.POST, request.FILES)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
             comment.user = request.user
             comment.post = post
             comment.save()
             return redirect('rutalk:post_detail', pk=post.pk)
+
+    target_group = getattr(post, 'group', None)
+    is_channel = bool(getattr(target_group, 'is_channel', False)) if target_group else False
+
+    if target_group:
+        if is_channel:
+            try:
+                back_url = reverse('rutalk:channel_detail', args=[target_group.pk])
+            except Exception:
+                back_url = reverse('rutalk:group', args=[target_group.pk])
+        else:
+            back_url = reverse('rutalk:group', args=[target_group.pk])
     else:
-        form = CommentForm()
+        back_url = reverse('rutalk:feed')
 
-    return render(request, 'rutalk/post_detail.html', {'post': post, 'comments': comments, 'form': form})
+    back_label = 'Назад'
+    post_text = getattr(post, 'body', '')
+    comment_items = [{'obj': comment, 'text': getattr(comment, 'body', '')} for comment in comments]
 
-
-@login_required
+    context = {
+        'post': post,
+        'post_text': post_text,
+        'comment_items': comment_items,
+        'comment_form': comment_form,
+        'back_url': back_url,
+        'back_label': back_label,
+    }
+    return render(request, 'rutalk/post_detail.html', context)
 def group_list(request):
     groups = Group.objects.all().order_by('-created_at')
     channels = Channel.objects.all().order_by('-created_at')

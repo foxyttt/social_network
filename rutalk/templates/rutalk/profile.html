@@ -2,10 +2,14 @@
 
 {% block content %}
 <div class="page-grid">
-    <section class="app-card wide">
-        <div class="app-card__header">
+    <section class="app-card wide profile-main-card">
+        <div class="app-card__header profile-header-bar">
             <h2 class="app-card__title">Профиль</h2>
+            {% if request.user == profile.user %}
+                <a href="{% url 'rutalk:feed' %}" class="btn btn-secondary profile-home-top-btn">На главную</a>
+            {% endif %}
         </div>
+
         <div class="app-card__body">
             <div class="profile-top">
                 <div class="profile-avatar">
@@ -25,16 +29,17 @@
                 <div class="profile-row"><strong>Имя:</strong><span>{{ profile.first_name|default:"—" }}</span></div>
                 <div class="profile-row"><strong>Фамилия:</strong><span>{{ profile.last_name|default:"—" }}</span></div>
                 <div class="profile-row"><strong>Отчество:</strong><span>{{ profile.patronymic|default:"—" }}</span></div>
-                <div class="profile-row"><strong>Дата рождения:</strong><span>{% if profile.birth_date %}{{ profile.birth_date|date:"d.m.Y" }}{% else %}—{% endif %}</span></div>
+                <div class="profile-row"><strong>Дата рождения:</strong><span>{{ profile.birth_date|date:"d.m.Y"|default:"—" }}</span></div>
                 <div class="profile-row"><strong>О себе:</strong><span>{{ profile.bio|default:"—" }}</span></div>
                 <div class="profile-row"><strong>Место учёбы/работы:</strong><span>{{ profile.education|default:"—" }}</span></div>
                 <div class="profile-row"><strong>Телефон:</strong><span>{{ profile.phone|default:"—" }}</span></div>
             </div>
         </div>
+
         <div class="app-card__footer actions-left">
             {% if request.user == profile.user %}
                 <a href="{% url 'rutalk:edit_profile' %}" class="btn">Редактировать профиль</a>
-                <a href="{% url 'rutalk:feed' %}" class="btn btn-secondary">На главную</a>
+                <a href="{% url 'rutalk:password_change' %}" class="btn btn-secondary profile-password-btn">Изменить пароль</a>
             {% else %}
                 <form method="post" style="display:flex; gap:12px; flex-wrap:wrap; margin:0;">
                     {% csrf_token %}
@@ -45,32 +50,33 @@
                     {% endif %}
                 </form>
             {% endif %}
-            <a href="{% url 'rutalk:profile_list' %}" class="btn btn-secondary">Все профили</a>
         </div>
     </section>
 
-    <section class="profile-extra">
-        <h3>На кого подписан {{ profile.user.username }}:</h3>
-        <ul>
-            {% for following in profile.follows.all %}
-                <li><a href="{% url 'rutalk:profile' following.id %}">{{ following }}</a></li>
-            {% empty %}
-                <li>—</li>
-            {% endfor %}
-        </ul>
+    <section class="profile-relations-card">
+        <div class="profile-relations-grid">
+            <div class="profile-relation-box">
+                <h3>На кого подписан {{ profile.user.username }}</h3>
+                <ul class="profile-links-list">
+                    {% for following in profile.follows.all %}
+                        <li><a href="{% url 'rutalk:profile' following.id %}">{{ following }}</a></li>
+                    {% empty %}
+                        <li class="profile-empty">Пока нет подписок</li>
+                    {% endfor %}
+                </ul>
+            </div>
 
-        <h3>Подписчики {{ profile.user.username }}:</h3>
-        <ul>
-            {% for follower in profile.followed_by.all %}
-                <li><a href="{% url 'rutalk:profile' follower.id %}">{{ follower }}</a></li>
-            {% empty %}
-                <li>—</li>
-            {% endfor %}
-        </ul>
-
-        {% if request.user == profile.user %}
-            <a href="{% url 'rutalk:password_change' %}" class="simple-link">Изменить пароль</a>
-        {% endif %}
+            <div class="profile-relation-box">
+                <h3>Подписчики {{ profile.user.username }}</h3>
+                <ul class="profile-links-list">
+                    {% for follower in profile.followed_by.all %}
+                        <li><a href="{% url 'rutalk:profile' follower.id %}">{{ follower }}</a></li>
+                    {% empty %}
+                        <li class="profile-empty">Пока нет подписчиков</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </section>
 </div>
 {% endblock content %}
