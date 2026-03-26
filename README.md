@@ -52,3 +52,107 @@ RuTalk — это веб-приложение социальной сети на
 - Пост должен принадлежать **ровно одному** контейнеру (группе или каналу) – проверка в `save()`.
 - Удаление пользователя (`DO_NOTHING` в полях `user` моделей `Post` и `Comment`) требует дополнительного контроля целостности (установлено вручную).
 
+## ⚙️ Запуск проекта
+
+### 1. Клонирование
+```bash
+git clone https://github.com/ваш-репозиторий/social_network.git
+cd social_network
+```
+2. Виртуальное окружение
+```bash
+python -m venv venv
+source venv/bin/activate      # Linux/macOS
+venv\Scripts\activate         # Windows
+```
+3. Установка зависимостей
+```bash
+pip install -r requirements.txt
+```
+4. Переменные окружения (.env)
+Создайте файл .env в корне. Минимальный набор:
+
+```ini
+DJANGO_SECRET_KEY=ваш-секретный-ключ
+```
+Для облачного хранилища добавьте:
+
+```ini
+YANDEX_CLIENT_ID=...
+YANDEX_SECRET_KEY=...
+YANDEX_BUCKET_NAME=...
+```
+5. Миграции
+```bash
+python manage.py migrate
+```
+6. Создание суперпользователя (опционально)
+```bash
+python manage.py createsuperuser
+```
+7. Запуск сервера разработки
+```bash
+python manage.py runserver
+```
+Приложение будет доступно по адресу http://127.0.0.1:8000/
+
+☁️ Облачное хранилище
+Интеграция с Yandex Object Storage (S3-совместимое).
+
+Если в .env присутствуют YANDEX_CLIENT_ID, YANDEX_SECRET_KEY и YANDEX_BUCKET_NAME, Django автоматически переключает хранилище на S3Boto3Storage.
+
+В противном случае файлы сохраняются локально в media/.
+
+Для отдачи медиа в режиме разработки в social/urls.py добавлены маршруты static().
+
+🧭 Основные маршруты
+URL	Назначение
+-/	Лента пользователя
+-/sign_up/	Регистрация
+-/accounts/login/	Вход
+-/accounts/logout/	Выход
+-/profile/<id>/	Просмотр профиля
+-/profile/edit/	Редактирование профиля
+-/groups/	Список групп и каналов
+-/groups/create/	Создание группы
+-/groups/<id>/	Детали группы, создание постов
+-/groups/<id>/join/	Вступление в группу
+-/channels/create/	Создание канала
+-/channels/<id>/	Детали канала
+-/post/<id>/	Просмотр поста и комментариев
+Полный список (24 маршрута) – в rutalk/urls.py.
+
+✅ Формы и валидация
+PostForm / CommentForm – проверяют размер изображения (≤ 10 МБ) и расширения (jpg, jpeg, png, gif)
+
+ProfileForm – редактирование полей профиля с datepicker для даты рождения
+
+CustomUserCreationForm – добавляет email к стандартной форме регистрации
+
+⚠️ Ограничения и планы
+Текущие ограничения
+DEBUG=True, ALLOWED_HOSTS пуст – не для production
+
+Отсутствуют автоматические тесты
+
+Бизнес-логика в views.py – требует выноса в сервисный слой при масштабировании
+
+on_delete=DO_NOTHING для user в Post и Comment – ручной контроль при удалении пользователей
+
+requirements.txt в UTF-16 (рекомендуется UTF-8)
+
+Планы на улучшение
+Добавление реакций (лайки/дизлайки) к постам и комментариям
+
+Система уведомлений
+
+Автоматические тесты (unit + integration)
+
+Production-конфигурация (PostgreSQL, отключение DEBUG, ALLOWED_HOSTS)
+
+👥 Авторы
+-Жиляков Роман
+
+-Коровайцев Степан
+
+-Колесников Артём
