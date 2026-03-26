@@ -151,6 +151,7 @@ requirements.txt в UTF-16 (рекомендуется UTF-8)
 Production-конфигурация (PostgreSQL, отключение DEBUG, ALLOWED_HOSTS)
 
 👥 Авторы
+
 Жиляков Роман
 
 Коровайцев Степан
