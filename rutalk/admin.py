@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
+from .models import Channel, Group
 
 from .models import Profile, Post
 
@@ -13,5 +14,6 @@ class UserAdmin(admin.ModelAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
-admin.site.unregister(Group)
+admin.site.register(Group)
+admin.site.register(Channel)
 admin.site.register(Post)
