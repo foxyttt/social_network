@@ -97,6 +97,7 @@ python manage.py runserver
 Приложение будет доступно по адресу http://127.0.0.1:8000/
 
 ☁️ Облачное хранилище
+
 Интеграция с Yandex Object Storage (S3-совместимое).
 
 Если в .env присутствуют YANDEX_CLIENT_ID, YANDEX_SECRET_KEY и YANDEX_BUCKET_NAME, Django автоматически переключает хранилище на S3Boto3Storage.
@@ -106,7 +107,9 @@ python manage.py runserver
 Для отдачи медиа в режиме разработки в social/urls.py добавлены маршруты static().
 
 🧭 Основные маршруты
+
 URL	Назначение
+
 /	Лента пользователя
 /sign_up/	Регистрация
 /accounts/login/	Вход
@@ -123,6 +126,7 @@ URL	Назначение
 Полный список (24 маршрута) – в rutalk/urls.py.
 
 ✅ Формы и валидация
+
 PostForm / CommentForm – проверяют размер изображения (≤ 10 МБ) и расширения (jpg, jpeg, png, gif)
 
 ProfileForm – редактирование полей профиля с datepicker для даты рождения
@@ -130,7 +134,9 @@ ProfileForm – редактирование полей профиля с datepi
 CustomUserCreationForm – добавляет email к стандартной форме регистрации
 
 ⚠️ Ограничения и планы
+
 Текущие ограничения
+
 DEBUG=True, ALLOWED_HOSTS пуст – не для production
 
 Отсутствуют автоматические тесты
