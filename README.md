@@ -157,7 +157,7 @@ python manage.py runserver
 - Production-конфигурация (PostgreSQL, отключение DEBUG, ALLOWED_HOSTS)
 
 ## 👥 Авторы
-
+ 
 - Жиляков Роман
 
 - Коровайцев Степан
